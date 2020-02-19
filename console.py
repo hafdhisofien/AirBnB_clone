@@ -84,25 +84,80 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 0:
             print("** class name missing **")
             return False
+        elif args[0] not in classes:
+            print("** class doesn't exist **")
+            return False
         elif len(args) == 1:
             print("** instance id missing **")
             return False
-        if args[0] in classes:
+        elif args[0] in classes:
                 key = args[0] + "." + args[1]
                 try:
                     models.storage.all()[key]
                     models.storage.all().pop(key)
                     models.storage.save()
-                except KeyError:                                                                                                            print("** no instance found **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
+                except KeyError:
+                    print("** no instance found **")
 
     def do_all(self, args):
         """
         Prints all string representation of all
         instances based or not on the class name
         """
+        all_obj = []
+        try:
+            if len(args) != 0:
+                eval(args)
+        except NameError:
+            print("** class doesn't exist **")
+            return
+        for key, val in models.storage.all().items():
+            if len(args) != 0:
+                if type(val) is eval(args):
+                    all_obj.append(str(val))
+            else:
+                all_obj.append(str(val))
+
+        print(all_obj)
+
+    def do_update(self, args):
+        """
+        Updates an instance based on the class name and id
+        by adding or updating attribute
+        (save the change into the JSON file)
+        """
         args = shlex.split(args)
+        if len(args) == 0:
+            print("** class name missing **")
+            return
+        elif len(args) == 1:
+            print("** instance id missing **")
+            return
+        elif len(args) == 2:
+            print("** attribute name missing **")
+            return
+        elif len(args) == 3:
+            print("** value missing **")
+            return
+        try:
+            eval(args[0])
+        except NameError:
+            print("** class doesn't exist **")
+            return
+        key = args[0] + "." + args[1]
+        obj_dict = models.storage.all()
+        try:
+            obj_value = obj_dict[key]
+        except KeyError:
+            print("** no instance found **")
+            return
+        try:
+            attr_type = type(getattr(obj_value, args[2]))
+            args[3] = attr_type(args[3])
+        except AttributeError:
+            pass
+        setattr(obj_value, args[2], args[3])
+        obj_value.save()
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
