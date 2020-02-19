@@ -1,4 +1,4 @@
-B#!/usr/bin/python3
+#!/usr/bin/python3
 """ console based on cmd module """
 
 import cmd
@@ -7,7 +7,9 @@ import models
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 
-classes = {"BaseModel": BaseModel, "User": User}
+classes = {"BaseModel": BaseModel, "User": User, "Place": Place,
+           "State": State,
+           "City": City, "Amenity": Amenity, "Review": Review}
 
 
 class HBNBCommand(cmd.Cmd):
